@@ -1,2 +1,2 @@
-# uncertainty
-Project in UGent, experimental psychology department. Visual search experiment.
+# Uncertainty
+Project in UGent, experimental psychology department. A visual search experiment using psychopy and python!
