@@ -6,7 +6,7 @@ Created on Wed Oct 2 15:11:32 2019
 
 This script creates as many dataframes as participants, randomizing the position, color, and orientation of the items
 A controlled randomization is done on cue colors where matches with the color target are checked to be exaclty half of the
-lines checked; having three cues of the same color is also avoided."""
+lines checked; having three cues of the same color is nalso avoided."""
 
 
 import numpy as np, pandas as pd, math, os, time
@@ -17,7 +17,6 @@ wdir = os.getcwd()
 ##     PARAMETERS     ##
 ########################
 
-participants = 5 #number of dataframes created
 
 
 if not os.path.isdir(wdir + '\\data'):
@@ -25,16 +24,16 @@ if not os.path.isdir(wdir + '\\data'):
 
 
 
-
-
 from Init_Cshape import trials_total, series, number_positions, colors,\
 orientation_target,orientation_distractor,cue_validity_0,cue_validity_1,\
-cue_validity_2, headers, keyboard, control_target_cue_match, control_same_color, row_check, practice
+cue_validity_2, headers, keyboard, control_target_cue_match, control_same_color, row_check, practice, KeyResp,\
+participants
+
 
 if keyboard:
-    device = 'keyboard'
+    device_n = 'keyboard'
 else:
-    device = 'Cedrus box'
+    device_n = 'Cedrus box'
 
 if control_target_cue_match:
     if control_same_color:
@@ -46,9 +45,9 @@ else:
 
 
 if practice:
-    string = 'Starting...going to build %s dataframes for PRACTICE '%(participants) + contr + '\nThe device is ' + device + '\n\n'
+    string = 'Starting...going to build %s dataframes for PRACTICE '%(participants) + contr + '\nThe device is ' + device_n + '\n\n'
 else:
-    string = 'Starting...going to build %s dataframes '%(participants) + contr + '\nThe device is ' + device + '\n\n'
+    string = 'Starting...going to build %s dataframes '%(participants) + contr + '\nThe device is ' + device_n + '\n\n'
 
 print(string)
 
@@ -67,6 +66,8 @@ color_cue0 = np.zeros(trials_total, dtype = int)
 color_cue1 = np.zeros(trials_total, dtype = int)
 color_cue2 = np.zeros(trials_total, dtype = int)
 correct_response = np.zeros(trials_total, dtype = int)
+if keyboard:
+    correct_response = ['na']*trials_total
 cue_identity_def = np.zeros(trials_total, dtype = int)
 cue_validity_def = np.zeros(trials_total, dtype = float)
 valid_cue0_def = np.zeros(trials_total, dtype = int)
@@ -82,12 +83,16 @@ ori_distractor = np.random.choice(orientation_distractor, number_positions*trial
 ###########################
 
 # For cycle for creating as many dataframes as participants
-for part_num in range(participants):
+for part_num in participants:
     
+    if not os.path.isdir(wdir + '\\data\\part_n_' + str(part_num)):
+        os.mkdir(wdir + '\\data\\part_n_' + str(part_num))
+
+
     if practice:
-        df_name = wdir + '\\data\\Practice_' + str(part_num) + '.csv'
+        df_name = wdir + '\\data\\part_n_' + str(part_num) + '\\Practice_' + str(part_num) + '.csv'
     else:
-        df_name = wdir + '\\data\\Dataframe_' + str(part_num) + '.csv'
+        df_name = wdir + '\\data\\part_n_' + str(part_num) + '\\Dataframe_' + str(part_num) + '.csv'
 
     if os.path.isfile(df_name):
         iN = input('The dataframe number %s already exists! Press \'y\' to delete it and proceed or \'n\' to cancel:\n'%part_num)
@@ -107,7 +112,7 @@ for part_num in range(participants):
 #   number of trials will go on infinitely.
     
     if practice:
-        cue_switches = np.array([15])
+        cue_switches = np.array([11])
 
     else:
         tot_trials_check = True
@@ -130,7 +135,6 @@ for part_num in range(participants):
         cue_switches = np.delete(np.cumsum(series_lenght),[series-1])
 
 
-    counterbalance = True if part_num % 2 == 0 else False  #True when participant number is even
 
     if practice:
         cue_validity_all = [.9,.8]
@@ -161,7 +165,7 @@ for part_num in range(participants):
     for rowI in range(trials_total):
 
         # Set cue_identity and cue validity, indexing based on how many trials have already been done. Basically changes
-        # cue identity and validity when the row correct_response onds to the switch.
+        # cue identity and validity when the row corresponds to the switch.
         part = sum(rowI > cue_switches)
         cue_validity_def[rowI] = cue_validity_all[part]
         cue_identity_def[rowI] = cue_identity[part]
@@ -171,21 +175,13 @@ for part_num in range(participants):
         start_position[rowI] = np.random.choice(number_positions)
         ori_target[rowI] = np.random.choice(orientation_target)
 
-        # Set which is the correct answer based on target orientation. Counterbalance between participants the
-        # response buttons.
-        
+        # Set which is the correct answer based on target orientation. 
         # CEDRUS BOX response
         if not keyboard:
-            if counterbalance:    #for participants with even number
                 if ori_target[rowI] == 0:        #Gap in the bottom
-                    correct_response[rowI] = 6   #Cedrus button on the right
+                    correct_response[rowI] = KeyResp[0]   #Cedrus button on the left
                 else:                            #Gap in the top
-                    correct_response[rowI] = 0   #Cedrus button on the left
-            else:
-                if ori_target[rowI] == 0:        #Gap in the bottom
-                    correct_response[rowI] = 0   #Cedrus button on the left
-                else:                            #Gap in the top
-                    correct_response[rowI] = 6   #Cedrus button on the right
+                    correct_response[rowI] = KeyResp[1]   #Cedrus button on the right
 
         # KEYBOARD response
         else:
@@ -418,12 +414,9 @@ for part_num in range(participants):
     
     #sns.heatmap(crosstab1)
 
-    if not os.path.isdir(wdir + '\\data'):
-        os.mkdir(wdir + '\\data')
-
     if practice:
         df.to_csv(path_or_buf = df_name)
-        print('Practice dataframe %s exported in %s'%(part_num,wdir) +'\\data\n\n')
+        print('Practice dataframe %s exported in %s\n\n\n'%(part_num,df_name))
     else:
         df.to_csv(path_or_buf = df_name)
-        print('Dataframe %s exported in %s'%(part_num,wdir) +'\\data\n\n')
+        print('Dataframe %s exported in %s\n\n\n'%(part_num,df_name))

@@ -8,26 +8,46 @@ Only set important variables once, for Randomization and experimental script.
 Also turn on/off some control on randomizations, decide which is the response device, etc.."""
 
 
-import random, shutil, os
+import random, shutil, os, time
 from psychopy import monitors
-print('Init script is being executed!!\n\n')
+from Cshape_functions import GUI
+
+file_name, dataframe_name, PN, part_name, mode, hand, age, gender = GUI()
+
+print('Init script is being executed!!\n')
+time.sleep(2)
+
 ##Practice or real dataframe?
-practice = False
+practice = True if mode =='Practice' else False
 ##Hints (debug and general idea of the procedure)?
 hints = True
 if not practice:
     hints = False
 
-monitor = 'jac'  #set 'benq' for experiment, 'jac' for my latitude
+dutch = False
 
-trials_total = 30 if practice else 630 #Number of rows in the dataframe and of repetitions in the experimental script
-practice_blocks = 1
-series = 1 if practice else 9# Number of series in total - one serie is a set of trials in which cue_identity and cue_validity do NOT change
+monitor = 'jac'  #set 'exp' for experiment, 'jac' for my latitude
 
-number_positions = 12  # Search array items
-number_distractors = number_positions - 1
+# Saving txt after how many trials?
+row_save = 5
 
-colors = [0,1,2]  #['blue','red', 'green']
+# After how many trials should we do a break?
+#break_num = 60
+
+participants = [0,1,2,3] #list of dataframes we want to create dataframe for each participant
+
+
+## Randomization controls?
+row_check = 10
+control_target_cue_match = True
+control_same_color = False
+
+## Possible to quit experiment?
+quiT = True
+
+# Response device: keyboard or Cedrus?
+keyboard = True
+
 
 # Set the preferred color space, adjust the labels accordingly. To use gammacorrection and isoluminant stimuli, RGB is needed. To test on different monitors use HSV.
 color_space = 'hsv'
@@ -47,34 +67,28 @@ cue_validity_0 = .76
 cue_validity_1 = .83
 cue_validity_2 = .9
 
-# Saving txt after how many trials?
-row_save = 5
+trials_total = 30 if practice else 630 #Number of rows in the dataframe and of repetitions in the experimental script
+series = 1 if practice else 9# Number of series in total - one serie is a set of trials in which cue_identity and cue_validity do NOT change
 
-# After how many trials should we do a break?
-break_num = 60
+number_positions = 12  # Search array items
+number_distractors = number_positions - 1
+
+colors = [0,1,2]  #['blue','red', 'green']
 
 
-## Randomization controls?
-row_check = 10
-control_target_cue_match = True
-control_same_color = False
-
-## Possible to quit experiment?
-quiT = True
-
-# Response device: keyboard or Cedrus?
-keyboard = True
 
 if keyboard:
-    KeyResp = ['up','down']
-    allowed_keys = KeyResp + ['q', 'escape']
+    KeyResp = ['down','up']
+    esc_keys = ['q', 'escape']
+    allowed_keys = KeyResp + esc_keys + ['space']
 
-    headers_answer = 'Reaction_times_Keyboard,Total_trial_time,Items_time,Placeholder_time,Cue_time,right_response,response_key,valid_trial'
+    headers_answer = 'Reaction_times_Keyboard,Total_trial_time,Items_time,Placeholder_time,Cue_time,is_response_right,response_key,valid_trial'
 
 else:
     KeyResp = [0,6]   #buttons of the cedrus box for response
-
-    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,right_response,Button_pressed,response_key, valid_trial'
+    allowed_keys = None
+    esc_keys = [3]
+    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,is_response_right,Button_pressed,response_key, valid_trial'
 
 
 
@@ -116,12 +130,12 @@ if monitor == 'default':
     mon = monitors.Monitor('testMonitor')
 elif monitor == 'exp':
     if os.path.isfile(os.path.join(os.getcwd(), 'BenQ.json')) and not os.path.isfile(os.path.normpath(os.path.join(gamma_path, gamma_configuration_name))):
-        print('Gamma configuration file found! Will move it in the right place\n')
-        shutil.move(os.path.join(os.getcwd(), gamma_configuration_name), os.path.normpath(gamma_path))
+        print('Gamma configuration file found! Will move it in the right place\n\n')
+        shutil.copy(os.path.join(os.getcwd(), gamma_configuration_name), os.path.normpath(gamma_path))
     elif not os.path.isfile(os.path.join(os.getcwd(), gamma_configuration_name)):
-        print('Gamma configuration file not found!\n')
+        print('Gamma configuration file not found!\n\n')
     elif os.path.isfile(os.path.normpath(os.path.join(gamma_path, gamma_configuration_name))):
-        print('Gamma configuration file already present!\n')
+        print('Gamma configuration file already present!\n\n')
     mon = monitors.Monitor(name = 'BenQ', width = 53.1, distance = 60)
     mon.setSizePix([1920,1080])
     mon.setCurrent('2019_10_30 16:27_gamma')
@@ -129,3 +143,9 @@ elif monitor == 'jac':
     mon = monitors.Monitor('Latitude_Jacopo')
 else:
     raise Exception('Monitor name not set correctly!!')
+    
+    
+    
+    
+### MESSAGES and translation
+    
