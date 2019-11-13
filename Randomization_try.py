@@ -18,7 +18,6 @@ wdir = os.getcwd()
 ########################
 
 
-
 if not os.path.isdir(wdir + '\\data'):
     os.mkdir(wdir + '\\data')
 
@@ -95,7 +94,8 @@ for part_num in participants:
         df_name = wdir + '\\data\\part_n_' + str(part_num) + '\\Dataframe_' + str(part_num) + '.csv'
 
     if os.path.isfile(df_name):
-        iN = input('The dataframe number %s already exists! Press \'y\' to delete it and proceed or \'n\' to cancel:\n'%part_num)
+        iN = input('The dataframe number %s already exists! Press \'y\' to delete it and proceed or \'n\' to cancel (\
+ if on Psychopy just stop the script and delete the file because input seems bugged):\n'%part_num)
         while not iN in ['n','y']:
             iN = input('Please answer \'y\' or \'n\':')
             if iN == 'y' or iN == 'n':
@@ -110,16 +110,16 @@ for part_num in participants:
     ### Take care that since lambda is .0125 mean of exp distribution is 80: series and total_trials
 #   should be comparable (trials_total%series should not be too high!!), if not the while check for
 #   number of trials will go on infinitely.
-    
+
     if practice:
         cue_switches = np.array([11])
 
     else:
         tot_trials_check = True
-    
+
         exp_mean = 70
         lambd = 1/exp_mean
-        
+
         while tot_trials_check:
             series_lenght = np.arange(series)
             for switch_ind in series_lenght:
@@ -127,13 +127,12 @@ for part_num in participants:
                 A = math.exp(-40*lambd)-math.exp(-100*lambd)#;         % inverse transform
                 y = -math.log(math.exp(-40*lambd) - x*A) / lambd #;       % inverse transform
                 series_lenght[switch_ind] = y
-    
+
             if sum(series_lenght) == (trials_total):
                 tot_trials_check = False
-    
+
         # Array with the trial number in which the switch happens.
         cue_switches = np.delete(np.cumsum(series_lenght),[series-1])
-
 
 
     if practice:
@@ -142,19 +141,19 @@ for part_num in participants:
     else:
         cue_validity_all = [cue_validity_0, cue_validity_1, cue_validity_2]
         cue_identity = [0,1,2]
-    
+
         # Set all the possible cue identity and cue validity crossing, and shuffle
         arr = []
         for el in cue_validity_all:
             for element in cue_identity:
                 arr.append((el,element))
-    
+
         arr = np.array(arr)
         np.random.shuffle(arr)
-    
+
         while 0 in np.diff(arr[:,1]):
             np.random.shuffle(arr)
-    
+
         cue_validity_all = arr[:,0]
         cue_identity = np.array(arr[:,1], dtype = int)
 
@@ -400,7 +399,6 @@ for part_num in participants:
     
     
     
-    
     #################################
     ##     EXPORT TO DATAFRAME     ##
     #################################
@@ -420,3 +418,4 @@ for part_num in participants:
     else:
         df.to_csv(path_or_buf = df_name)
         print('Dataframe %s exported in %s\n\n\n'%(part_num,df_name))
+    time.sleep(1.5)

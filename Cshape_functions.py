@@ -76,23 +76,22 @@ def GUI():
     return file_name,dataframe_name, PN, part_name, mode, hand, age, gender
 
 
-def Response(device, keyboard, quiT, time_search, allowed_keys, clock_items):
+def Response(device, keyboard, quiT, time_search, allowed_keys, clock_items, row = -1):
 
     if not keyboard: #cedrus
         if device.is_response_device():
             
             # This should poll and clear all responses from the box before the actual response is expected
-    #        numb = 0
             device.poll_for_response()
             while device.has_response():
                 device.clear_response_queue()
                 device.poll_for_response()
-    #            numb += 1
-    
-    #            print('number %s, cleared response %s'%(numb, re))
-    
-    #        print('device has no more responses')
-    
+
+            # Set everything to None in case I have a weird answer
+            Press_key = None
+            ReleaseResponse_loc = None
+            Time_key = None
+
     
             clock_loc = core.Clock()
             release = False
@@ -118,13 +117,14 @@ def Response(device, keyboard, quiT, time_search, allowed_keys, clock_items):
                         ReleaseResponse_loc = None
 #                        print('For cedrus: ',type(Press_key),type(Time_key), sep='    ')
 
-                    elif not resp['pressed']:
+                    elif not resp['pressed'] and Press_key is not None:
                         ReleaseResponse_loc = resp
                         release = True
 
+
                     else:
-                        print('Something is wrong with this response %s'%resp)
-                    
+                        print('Something is wrong with this response %s at trial %s'%(resp,row))
+
 
         else:
             print('device %s is not a response device!'%device)
@@ -162,51 +162,76 @@ def Response(device, keyboard, quiT, time_search, allowed_keys, clock_items):
 def Instructions(part_number, part_name, win, item, cue, mode, device, KeyResp, ori_targ, keyboard, quiT, allowed_keys,\
                  clock_items, esc_keys, cue_prot0, cue_prot1, cue_prot2, dutch):
  
-    buttoN = 'the spacebar' if keyboard else 'a button'
+    if not dutch:
+        buttoN = 'the spacebar' if keyboard else 'a button'
+    else:
+        buttoN = 'de spatiebalk' if keyboard else 'de responsknop'
+
+#    \n- Focus in het begin van elke trial op het centrale fixatiekruis en begin dan te zoeken van daaruit.'
+
 
     #useless clock
     clockUseless = core.Clock()
-    space = 'Press {} to continue..'
+    space = 'Press {} to continue...' if not dutch else\
+    'druk op {} om verder te gaan...'
 
-    test1 = 'Press {} and respond correctly to these targets to continue!'
+    test1 = 'Press {} and respond correctly to these targets to continue!' if not dutch else\
+    'Druk op {} en reageer correct op deze target stimuli om door te gaan!'
 
     message_1_welcome = 'Welcome to the experiment, {0}! In this visual search task, you are asked to detect as quickly\
  and accurately as possible one target among distractors.\n\nAll the items are shapes of 3 different random colors (red, blue or green - changing randomly),\
  with a gap on one side:\
     \n\n- Target items have a gap on either the upper or the lower part.\
-    \n- Distractors have a gap on the left or on the right.' if not dutch else 'Welkom bij dit experiment! In deze visuele zoektaak zal je zo snel en accuraat mogelijk een target moeten detecteren tussen distractoren (afleiders). Deze stimuli zijn vormen in 3 verschillende kleuren (rood, blauw of groen) met een opening aan één kant.\
- Target stimuli hebben ofwel aan de bovenkant of de onderkant een opening\
- Distractoren hebben ofwel aan de linkerkant of de rechterkant een opening. Focus in het begin van elke trial op het centrale fixatiekruis en begin dan te zoeken van daaruit.'
+    \n- Distractors have a gap on the left or on the right.' if not dutch else\
+    'Welkom in dit experiment! In deze visuele zoektaak zal je zo snel\
+ en accuraat mogelijk een target moeten detecteren tussen distractoren (afleiders). Deze stimuli zijn vormen in 3 verschillende kleuren (rood, blauw of groen) met een opening aan één kant:\
+    \n\n- Target stimuli hebben ofwel aan de bovenkant ofwel aan onderkant een opening\
+    \n- Distractoren hebben ofwel aan de linkerkant ofwel aan de rechterkant een opening.'
 
     message_2_target = 'Please look at the fixation point in the center of the screen and start your search from there!\nThe target will be always present and you have to respond to its orientation in this way:\
     \n\n- Press the button on the top with your {} index finger if the gap is on the top of the shape.\
-    \n- Press the button on the bottom with your {} index finger if the gap is on the bottom of the shape.' if not dutch else 'Kijk naar het fixatiekruis in het midden van het scherm en begin vanaf daar met zoeken!\
- Er zal altijd een target aanwezig zijn en je moet reageren op de oriëntatie van deze target:\n\n\
- Duw met je wijsvinger op de bovenste toets als de opening aan de bovenkant is.\n\n\
- Duw met je wijsvinger op de onderste toets als de opening aan de onderkant is.'
+    \n- Press the button on the bottom with your {} index finger if the gap is on the bottom of the shape.' if not dutch else\
+    'Kijk naar het fixatiekruis in het midden van het scherm tot de stimuli op het scherm verschijnen, begin dan onmiddelijk met zoeken!\
+ Er zal altijd een target aanwezig zijn en je moet reageren op de oriëntatie van deze target:\
+    \n\n- Duw met je wijsvinger op de bovenste toets als de opening aan de bovenkant is.\
+    \n- Duw met je wijsvinger op de onderste toets als de opening aan de onderkant is.'
 
 
     message_3_cues = 'Before the search, a set of 3 colored cues will appear (colors will change every trial). Please note that:\
     \n\n- Only ONE of the 3 cues will often have the same color of the target, helping you in the visual search!\
-    \n\n- The other 2 cues will be colored randomly.'
+    \n\n- The other 2 cues will be colored randomly.' if not dutch else\
+    'Voor de zoektaak begint zal een set van 3 gekleurde cues verschijnen (kleuren veranderen van trial tot trial). Let op dat:\
+    \n\n\n- Enkel ÉÉN van de 3 cues een correct voorspellende cue is, en enkel deze cue heeft hetzelfde kleur als de target. Dit kan je helpen in de visuele zoektaak.\
+    \n\n- De andere 2 cues zullen een willekeurig kleur hebben.'
 
-    message_objective = '**You have to guess which of the three cues is the one that is OFTEN colored as the target in order to make a quick detection!**'
+
+    message_objective = '**You have to guess which of the three cues is the one that is OFTEN colored as the target in order to make a quick detection!**'if not dutch else\
+    '**Je zal moeten raden welk van de 3 cues de correct voorspellende cue is. Dus, welke cue VAAK hetzelfde kleur heeft als de target om zo de target snel te kunnen detecteren.**'
 
     message_4_switch = 'The cue often colored as the target will not remain the same for the whole experiment (for example, it can switch \
-from the right position to the top one after some trials). Generally, this cue change will happen:\
-    \n\n\n- After a break (end of the block)\
-    \n\n- A few times within each block (but note that it won\'t change too often - NOT every few trials...'
+from the right position to the top one after some trials). Generally, this cue change will happen a few times within the experiment (but note that it won\'t change too often - NOT every few trials...' if not dutch else\
+'Welke cue vaak dezelfde kleur heeft als de target, zal niet gedurende het hele experiment hetzelfde blijven (het kan bijvoorbeeld na \
+enkele trials veranderen van de rechter positie naar de bovenste positie). Over het algemeen zal deze cue verandering een paar\
+ keer binnen elk blok gebeuren (maar let op: het zal niet te vaak veranderen).'
 
-    message_5_questions = 'Please ask any question now if something is not clear!'
-    
-    message_6 = 'You will start with some practice trials as soon as you press a button..'
+    message_5_questions = 'Please ask any question now if something is not clear!' if not dutch else\
+    'Is alles duidelijk? Zo niet, stel alsjeblieft vragen aan de proefleider!'
+
+    message_6 = 'You will start with some practice trials as soon as you press a button..' if not dutch else\
+    'Druk op een knop om te beginnen met enkele oefentrials.'
  
     recap_message = 'Just a few things before we get started:\n\n\n\
     - Remember to use the reliable cue to speed up the visual search (respond as fast and as accurately as possible)\n\n\
     - Try to notice if the cue you are using is reliable or not\n\n\
-    - Always look at the fixation cross in the center before the search!'
-    
-    message_final = 'Press a button whenever you are ready to start the real experiment, {}!'.format(part_name)
+    - Always look at the fixation cross in the center before the search!' if not dutch else\
+    'Een paar dingen voordat we beginnen:\n\n\n\
+    - Vergeet niet de betrouwbare cue te gebruiken om het visueel zoeken te versnellen (reageer zo snel en zo accuraat mogelijk).\n\n\
+    - Probeer op te merken of de cue die je gebruikt betrouwbaar is of niet.\n\n\
+    - Kijk altijd naar het fixatiekreus in het midden voor het zoeken!'
+
+
+    message_final = 'Press a button whenever you are ready to start the real experiment, {}!'.format(part_name) if not dutch else\
+    'Druk op een knop wanneer je klaar bent om het echte experiment te starten, {}!'.format(part_name)
 
     wrap = 32.5
     triangle_side = 4
@@ -251,7 +276,7 @@ from the right position to the top one after some trials). Generally, this cue c
                             pos=(0,0),\
                             alignVert = 'bottom', bold = True)
 
-    cuelabel = vis.TextStim(win, text = 'The cues',\
+    cuelabel = vis.TextStim(win, text = 'The cues' if not dutch else 'De cues',\
                             color='black',\
                             wrapWidth = wrap,\
                             height = .7,\
@@ -341,9 +366,9 @@ from the right position to the top one after some trials). Generally, this cue c
 
     if mode == 'Practice':
         if counterbalance:
-            textbox_2.text = message_2_target.format(lab[0], lab[1]) #for even participant, switch hands
+            textbox_2.text = message_2_target.format(lab[0], lab[1]) #for even participant, switch hands (left index on the top)
         else:
-            textbox_2.text = message_2_target.format(lab[1], lab[0]) # for uneven participant, switch hands
+            textbox_2.text = message_2_target.format(lab[1], lab[0]) # for uneven participant, switch hands (right index on the top)
         textbox_1.draw()
         win.flip()
         Wait_and_respond(message = spacetext, device = device, keyboard = keyboard, quiT = quiT,\
@@ -365,7 +390,8 @@ from the right position to the top one after some trials). Generally, this cue c
                 item.ori = ori[x]
                 item.draw()
                 textbox_2.draw()
-                testtext.text = 'Respond correctly to these targets to continue!'
+                testtext.text = 'Respond correctly to these targets to continue!' if not dutch else\
+                'Reageer correct op deze target stimuli om door te gaan!'
                 testtext.draw()
                 win.flip()
                 Press_key = Wait_and_respond(message = None, device = device, keyboard = keyboard, quiT = quiT, allowed_keys = allowed_keys, wait = 0)
@@ -389,10 +415,6 @@ from the right position to the top one after some trials). Generally, this cue c
                 item.fillColor = 'black'
 
         textbox_3.draw()
-        win.flip()
-        Wait_and_respond(message = spacetext, device = device, keyboard = keyboard, quiT = quiT,\
-                         allowed_keys = allowed_keys, message2 = textbox_3)
-        textbox_3.draw()
         cue_prot0.draw()
         cue_prot1.draw()
         cue_prot2.draw()
@@ -404,7 +426,7 @@ from the right position to the top one after some trials). Generally, this cue c
         cue_prot2.draw()
         cuelabel.draw()
         Wait_and_respond(message = spacetext, device = device, keyboard = keyboard, quiT = quiT,\
-                         allowed_keys = allowed_keys, wait = 2)
+                         allowed_keys = allowed_keys, wait = 10)
         objmessage.draw()
         win.flip()
         Wait_and_respond(message = objmessage, device = device, keyboard = keyboard, quiT = quiT,\
@@ -433,22 +455,40 @@ from the right position to the top one after some trials). Generally, this cue c
 
 
 
-def breaK(win,device, keyboard, quiT, allowed_keys, clock_items,row, response, rt, time_search = 500000):
-    
-    acc = (len(response[response == 1])/row-1)*100
-    err = (len(response[response == 0])/row-1)*100
-    miss = (len(response[response == -1])/row-1)*100
-    rts = np.mean(rt[:row-1])
-    
-    string = 'Let\'s have a break!\n\nYour mean reaction time {}ms!'
-    string2 = 'Are you ready? Press a button to resume the experiment!'
+def breaK(win,device, keyboard, quiT, allowed_keys, clock_items,row, response, rt,dutch, time_search = 500000, string1 = 'default',\
+          crash = False, row_start = 0):
+
+    if crash:
+        acc = len(response[response == 1])/(row-row_start)*100
+        rts = np.mean(rt[row_start:row])
+
+    else:
+        acc = len(response[response == 1])/(row)*100
+        rts = np.mean(rt[:row])
+
+#    err = len(response[response == 0])/(row)*100
+#    miss = len(response[response == -1])/(row)*100
+
+    string = 'Let\'s have a break!\n\nYour mean reaction time is {}ms!\n\n\
+You accuracy is {}%!' if not dutch else \
+    'Laten we een pauze nemen! Je gemiddelde reactietijd is {}ms!\n\nJe nauwkeurigheid is {}%!'
+    string2 = 'Are you ready? Press a button to resume the experiment!' if not dutch else\
+    'Ben je er klaar voor? Druk op een knop om het experiment te hervatten!'
+
     message = vis.TextStim(win, wrapWidth = 30, text = 'DEF', bold = False,pos = (0,0), height = 2, color = 'black')
     if keyboard:
-        message.text = string.format(round(rts*1000))
+        message.text = string.format(int(round(rts*1000)),round(acc))
     else:
-        message.text = string.format(round(rts))
+        message.text = string.format(int(round(rts)),round(acc))
     message.draw()
     win.flip()
+    Response(device, keyboard, quiT, time_search, allowed_keys, clock_items)
+    message.text = string1
+    message.wrapWidth = 32
+    message.height = 1
+    message.draw()
+    win.flip()
+    time.sleep(8)
     Response(device, keyboard, quiT, time_search, allowed_keys, clock_items)
     message1 = vis.TextStim(win, wrapWidth = 25, text = string2, bold = True,pos = (0,0), height = 2, color = 'black')
     message1.draw()
