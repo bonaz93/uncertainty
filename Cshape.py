@@ -24,7 +24,7 @@ from Init_Cshape import headers, colors, headers_answer, trials_total,\
 time_search, KeyResp, quiT, ms_to_frames, row_save, mon, esc_keys,allowed_keys,file_name,\
 dataframe_name, PN, part_name, mode, hand, age, gender, practice, dutch,\
 wrong_key_text, late_answer_text,switch_text,no_more_mess_text,end_practice, bye_text, hint_text,\
-neg_feedback_text, break_time, string1, row_crash, crash
+neg_feedback_text, break_time, string1, row_crash, crash, invalid_hint
 
 # Set boolean for practice or not.
 #if mode == 'Practice':
@@ -266,7 +266,9 @@ late_answ = vis.TextStim(win, text = late_answer_text, height = .6, pos = (0,0),
 
 switch_message = vis.TextStim(win, text = switch_text ,wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
 
-no_more_mess = vis.TextStim(win, text = no_more_mess_text,wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
+invalid_message = vis.TextStim(win, text = invalid_hint ,wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
+
+no_more_mess = vis.TextStim(win, text = no_more_mess_text,wrapWidth = 30, height = 1, pos = (0,0), color = 'black', bold = False)
 
 end_practice_message = vis.TextStim(win, text = end_practice,\
                     color='black', bold = False,\
@@ -400,8 +402,8 @@ for rowI in range(row_crash,trials_total):
     clock_placeholder.reset()
 
     #This should present the stimuli for 30-54 frames (corresponds to 500-900 ms)
-    
     for frame in time_placeholder:
+        fixation.draw()
         if hints and rowI < 20:
             Hint.draw()
         if not hints:
@@ -431,6 +433,7 @@ for rowI in range(row_crash,trials_total):
 
     for frame in time_cues:
 
+        fixation.draw()
         if hints and rowI < 20:
             Hint.draw()
         if not hints:
@@ -572,11 +575,14 @@ for rowI in range(row_crash,trials_total):
         for frame in range(120):
             late_answ.draw()
             win.flip()
-
+    if practice and df.loc[rowI,'valid_trial'] == 0:
+        invalid_message.draw()
+        win.flip()
+        time.sleep(9)
 
     # Inter-trial interval (with fixation cross?)
     for frame in range(random.randrange(ms_to_frames(500),ms_to_frames(1000), ms_to_frames(100))):
-#        fixation.draw()
+        fixation.draw()
         if not hints:
             Place_Holder0.draw()
             Place_Holder1.draw()
