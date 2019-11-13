@@ -402,8 +402,8 @@ for rowI in range(row_crash,trials_total):
     clock_placeholder.reset()
 
     #This should present the stimuli for 30-54 frames (corresponds to 500-900 ms)
-    fixation.draw()
     for frame in time_placeholder:
+        fixation.draw()
         if hints and rowI < 20:
             Hint.draw()
         if not hints:
@@ -578,7 +578,7 @@ for rowI in range(row_crash,trials_total):
     if practice and df.loc[rowI,'valid_trial'] == 0:
         invalid_message.draw()
         win.flip()
-        time.sleep(8)
+        time.sleep(9)
 
     # Inter-trial interval (with fixation cross?)
     for frame in range(random.randrange(ms_to_frames(500),ms_to_frames(1000), ms_to_frames(100))):
