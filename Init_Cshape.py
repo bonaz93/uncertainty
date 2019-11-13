@@ -26,7 +26,7 @@ monitor = 'exp'  #set 'exp' for experiment, 'jac' for my latitude, else 'default
 row_save = 5
 
 # After how many minutes should we do a break?
-break_time = 4
+break_time = 7
 
 participants = range(0,1) #list of dataframes we want to create dataframe for each participant
 
@@ -195,3 +195,8 @@ string1 = 'Always try to understand which of the three cues is the reliable one 
  En onthoud dat:\
 \n\n\n - De betrouwbare keu zal niet *altijd* van dezelfde kleur zijn als het doelwit, maar meestal wel van dezelfde kleur!\
 \n\n\n - De betrouwbare keu zal van positie veranderen na een variabel aantal proeven.'
+
+invalid_hint = 'This trial was invalid! The reliable cue was not of the same color of the target, but this doesn\'t necessarly means\
+ that it is in a new position!' if not dutch else\
+'Deze rechtszaak was ongeldig! De betrouwbare keu was niet van dezelfde kleur als het doelwit, \
+maar dit betekent niet noodzakelijkerwijs dat het in een nieuwe positie verkeert!'

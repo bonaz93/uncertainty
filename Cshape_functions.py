@@ -201,8 +201,8 @@ def Instructions(part_number, part_name, win, item, cue, mode, device, KeyResp, 
     \n\n- Only ONE of the 3 cues will often have the same color of the target, helping you in the visual search!\
     \n\n- The other 2 cues will be colored randomly.' if not dutch else\
     'Voor de zoektaak begint zal een set van 3 gekleurde cues verschijnen (kleuren veranderen van trial tot trial). Let op dat:\
-    \n\n- Enkel ÉÉN van de 3 cues een correct voorspellende cue is, en enkel deze cue heeft hetzelfde kleur als de target. Dit kan je helpen in de visuele zoektaak.\
-    \n- De andere 2 cues zullen een willekeurig kleur hebben.'
+    \n\n\n- Enkel ÉÉN van de 3 cues een correct voorspellende cue is, en enkel deze cue heeft hetzelfde kleur als de target. Dit kan je helpen in de visuele zoektaak.\
+    \n\n- De andere 2 cues zullen een willekeurig kleur hebben.'
 
 
     message_objective = '**You have to guess which of the three cues is the one that is OFTEN colored as the target in order to make a quick detection!**'if not dutch else\
@@ -276,7 +276,7 @@ enkele trials veranderen van de rechter positie naar de bovenste positie). Over 
                             pos=(0,0),\
                             alignVert = 'bottom', bold = True)
 
-    cuelabel = vis.TextStim(win, text = 'The cues',\
+    cuelabel = vis.TextStim(win, text = 'The cues' if not dutch else 'De cues',\
                             color='black',\
                             wrapWidth = wrap,\
                             height = .7,\

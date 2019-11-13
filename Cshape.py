@@ -33,7 +33,7 @@ neg_feedback_text, break_time, string1, row_crash, crash
 #    practice = False
 
 # Save data file if we are not in practice mode. Will be updated at the end with the total time.
-if not practice:
+if not practice and not crash:
     info_file = open('data\\part_n_' + PN + '\\info_' + PN +'.txt', 'x')
     info_file.write('file_name = ' + file_name + '\n' +\
                     'dataframe_name = ' + dataframe_name + '\n' +\
@@ -283,7 +283,7 @@ ms = 5000 #milliseconds for time_cues to reduce the timing during practice?
 
 
 if practice:
-    limits = np.array([950,1200,2000,2500,3500])  # For pos feedback during pratice
+    limits = np.array([750,950,1650,2100,3000])  # For pos feedback during pratice
     if keyboard:
         limits = limits / 1000  # For pos feedback during pratice
 
@@ -381,7 +381,7 @@ for rowI in range(row_crash,trials_total):
         if not dutch:
             cue_id_label = 'left' if cue_identity_temp == 0 else ('top' if cue_identity_temp == 1 else 'right')
         else:
-            cue_id_label = 'linker ' if cue_identity_temp == 0 else ('hoogste' if cue_identity_temp == 1 else 'rechterkant')
+            cue_id_label = 'linker' if cue_identity_temp == 0 else ('hoogste' if cue_identity_temp == 1 else 'rechterkant')
         string = hint_text.format(cue_id_label)
         Hint.text = string
 #        string2 = 'Position first is %s\nPostionTarget is %s\nTarget color is %s'%(start_position, positionTarget, color_target)
