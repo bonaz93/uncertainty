@@ -22,7 +22,9 @@ from Cshape_functions import Response, Instructions, breaK
 from Init_Cshape import headers, colors, headers_answer, trials_total,\
  color_labels, number_positions, keyboard, color_space, hints, time_placeholder,time_cues,\
 time_search, KeyResp, quiT, ms_to_frames, row_save, mon, esc_keys,allowed_keys,file_name,\
-dataframe_name, PN, part_name, mode, hand, age, gender, practice, dutch
+dataframe_name, PN, part_name, mode, hand, age, gender, practice, dutch,\
+wrong_key_text, late_answer_text,switch_text,no_more_mess_text,end_practice, bye_text, hint_text,\
+neg_feedback_text, break_time, string1, row_crash, crash
 
 # Set boolean for practice or not.
 #if mode == 'Practice':
@@ -217,6 +219,7 @@ gray = (0,0,.5) if color_space == 'hsv' else ((0,0,0,) if color_space == 'rgb' e
 win = vis.Window(fullscr = True, winType = 'pyglet', color = gray, monitor = mon, units = 'deg', gammaErrorPolicy = 'ignore', colorSpace = color_space) #monitor = 'Benq_xl2411'
 if not practice:
     win.allowGUI = False
+    win.mouseVisible = False
 # Define the 12 polygon vertices
 CVert = ((x,h-gap),(x,y),(-x,y),(-x,-y),(x,-y),(x,(-h+gap)),(g,(-h+gap)), (g,-h), (-g,-h), (-g,h), (g,h), (g,h-gap))
 
@@ -257,29 +260,13 @@ if hints:
 #    Hint2 = vis.TextStim(win, height = .6, pos = (0,-4), color = 'black')
 
 # Feedback messages
-wrong_key = vis.TextStim(win, text = 'DEFAULT', height = .6, pos = (0,0), color = 'red', bold = True)
-if keyboard:
-    wrong_key.text = 'Wrong button, please only respond with up or down arrow'
-    if dutch:
-        wrong_key.text = 'Verkeerde knop, reageer alsjeblieft alleen met de bovenste of de onderste toets'
+wrong_key = vis.TextStim(win, text = wrong_key_text, height = .6, pos = (0,0), color = 'red', bold = True)
 
-else:
-    wrong_key.text = 'Wrong button, please only respond with the first and last button'
-    if dutch:
-        wrong_key.text = 'Verkeerde knop, reageer alsjeblieft alleen met de bovenste of de onderste toets'
+late_answ = vis.TextStim(win, text = late_answer_text, height = .6, pos = (0,0), color = 'red', bold = True)
 
+switch_message = vis.TextStim(win, text = switch_text ,wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
 
-late_answ = vis.TextStim(win, text = 'Try to respond faster!' if not dutch else 'Probeer om sneller te reageren!', height = .6, pos = (0,0), color = 'red', bold = True)
-
-switch_message = vis.TextStim(win, text = 'The position of the predictive cue is about to change!' if not dutch else 'De positie van de voorspellende cue gaat bijna veranderen!',wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
-
-no_more_mess = vis.TextStim(win, text = 'No more hints! Can you follow the right cue?' if not dutch else'Geen hints meer! Kun je de juiste cue volgen?',wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
-
-end_practice = 'Good job! As you may have noticed, very often but not always the reliable cue has the same \
-color of the target!\n\nIn the real experiment you will have no hints and you will need to infer when the reliable\
- cue has changed position to make a good performance :)'
-if dutch:
-    end_practice = 'Goed zo! Zoals je misschien gemerkt hebt heeft de betrouwbare cue vaak, maar niet altijd, dezelfde kleur als de target! In het echte experiment heb je geen hints en moet je raden wanneer de betrouwbare cue van positie is veranderd om een goede prestatie te leveren :)'
+no_more_mess = vis.TextStim(win, text = no_more_mess_text,wrapWidth = 30, height = 1.7, pos = (0,0), color = 'black', bold = False)
 
 end_practice_message = vis.TextStim(win, text = end_practice,\
                     color='black', bold = False,\
@@ -289,7 +276,7 @@ end_practice_message = vis.TextStim(win, text = end_practice,\
                     alignVert = 'center')
 
 
-neg_feedback = vis.TextStim(win, text = 'Wrong answer! Up for gap in the top, down for gap in the bottom!' , height = .6, pos = (0,0), color = 'crimson', bold = True, wrapWidth = 30)
+neg_feedback = vis.TextStim(win, text = neg_feedback_text , height = .6, pos = (0,0), color = 'crimson', bold = True, wrapWidth = 30)
 pos_feedback = vis.TextStim(win, text = 'Default', height = .6, pos = (0,0), color = 'green', bold = True, wrapWidth = 30)
 
 ms = 5000 #milliseconds for time_cues to reduce the timing during practice?
@@ -310,8 +297,10 @@ Instructions(part_number=int(PN), part_name=part_name, win = win, item = C_prot,
              allowed_keys = allowed_keys, clock_items = None, esc_keys = esc_keys, cue_prot0 =cue_prot0, cue_prot1 = cue_prot1,\
              cue_prot2 = cue_prot2, dutch = dutch) 
 
-time.sleep(.5)
+core.wait(1)
 
+
+breaks = []
 
 ####################################
 ##     EXPERIMENTAL PROCEDURE     ##
@@ -325,16 +314,16 @@ clock_placeholder = core.Clock()
 clock_cues = core.Clock()
 clock_items = core.Clock()
 clock_trial = core.Clock()
-
+break_clock = core.Clock()
+break_clock.reset(break_time * 60)
 
 if not keyboard:
     device.reset_base_timer() #should be called just before first trial
 
-cue_switch_counter = 0
 
 
 # Repeat for the number of trials
-for rowI in range(trials_total):
+for rowI in range(row_crash,trials_total):
 
     if practice and rowI == 12:
         switch_message.draw()
@@ -351,15 +340,19 @@ for rowI in range(trials_total):
     cue_identity_temp = df.loc[rowI,'cue_identity_def']
     cue_validity_temp = df.loc[rowI,'cue_validity_def']
     
-    # Breaks - count the cue switches and do a break every 3 cue switch
-    if rowI != trials_total-1 and rowI != 0:
-        if df.loc[rowI,'cue_identity_def'] != df.loc[rowI-1, 'cue_identity_def']:
-            cue_switch_counter += 1
+#    # Breaks - count the cue switches and do a break every 3 cue switch
+#    if rowI != trials_total-1 and rowI != 0:
+#        if df.loc[rowI,'cue_identity_def'] != df.loc[rowI-1, 'cue_identity_def']:
+#            cue_switch_counter += 1
 
     # Make a break after how many switch?
-    if cue_switch_counter == 3:
-        cue_switch_counter = 0
-        breaK(win,device, keyboard, quiT, allowed_keys, clock_items, row = rowI, response = is_response_right, rt = RTs_keyboard if keyboard else RTs_cedrus)
+    if not practice and break_clock.getTime() > 0:
+        rest_clock = core.Clock()
+        breaK(win,device, keyboard, quiT, allowed_keys, clock_items, row = rowI+1, response = is_response_right,\
+              rt = RTs_keyboard if keyboard else RTs_cedrus, dutch = dutch, string1 = string1,\
+              crash = crash, row_start = row_crash)
+        breaks.append(rest_clock.getTime())
+        break_clock.reset(break_time * 60)
 
 
 # Randomize positions for search items
@@ -385,8 +378,11 @@ for rowI in range(trials_total):
     
     # Just the text for the hint
     if hints:
-        cue_id_label = 'left' if cue_identity_temp == 0 else ('top' if cue_identity_temp == 1 else 'right')
-        string = 'The reliable cue is in the {} position'.format(cue_id_label)
+        if not dutch:
+            cue_id_label = 'left' if cue_identity_temp == 0 else ('top' if cue_identity_temp == 1 else 'right')
+        else:
+            cue_id_label = 'linker ' if cue_identity_temp == 0 else ('hoogste' if cue_identity_temp == 1 else 'rechterkant')
+        string = hint_text.format(cue_id_label)
         Hint.text = string
 #        string2 = 'Position first is %s\nPostionTarget is %s\nTarget color is %s'%(start_position, positionTarget, color_target)
 #        Hint2.text = string2
@@ -509,7 +505,7 @@ for rowI in range(trials_total):
 
     Press_key, Time_key, ReleaseResponse = Response(device = device, keyboard = keyboard, quiT = quiT,\
                                                           time_search = time_search, allowed_keys = allowed_keys,\
-                                                          clock_items = clock_items)
+                                                          clock_items = clock_items, row = rowI)
     
     # Keep track of elapsed time just for check
     items_time[rowI] = clock_items.getTime()
@@ -602,13 +598,33 @@ for rowI in range(trials_total):
         time_search -= .19
         ms -= 140
 
-    if practice and rowI == trials_total:
-        end_practice_message.draw()
-        win.flip()
-        time.sleep(5)
-        Response(device = device, keyboard = keyboard, quiT = quiT,\
-                  time_search = 60000, allowed_keys = allowed_keys,\
-                  clock_items = core.Clock())
+    if rowI == trials_total-1:
+        if practice:
+            end_practice_message.draw()
+            win.flip()
+            time.sleep(5)
+            Response(device = device, keyboard = keyboard, quiT = quiT,\
+                      time_search = 60000, allowed_keys = allowed_keys,\
+                      clock_items = core.Clock())
+            end_practice_message.text = string1
+            end_practice_message.draw()
+            win.flip()
+            time.sleep(8)
+            Response(device = device, keyboard = keyboard, quiT = quiT,\
+              time_search = 60000, allowed_keys = allowed_keys,\
+              clock_items = core.Clock())
+        else:
+            bye = vis.TextStim(win, text = bye_text,\
+                    color='black', bold = True,\
+                    wrapWidth = 32,\
+                    height = 1,\
+                    pos=(0,0),\
+                    alignVert = 'center')
+            bye.draw()
+            win.flip()
+            time.sleep(15)
+
+
 
 
 
@@ -617,10 +633,12 @@ for rowI in range(trials_total):
     if rowI % row_save == 0 and rowI != 0:
 
         if keyboard:
-            sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key, df.loc[:,'valid_trial']))
+            sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key,\
+                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
             np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
         else:
-            sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key, df.loc[:,'valid_trial']))
+            sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key,\
+                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
             np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 
 
@@ -636,37 +654,31 @@ for rowI in range(trials_total):
 #
 #    guessed_cues.append(guessedCue)
             
-total_time = total_clock.getTime()
 
 if not practice:
+    total_time = total_clock.getTime()
     info_file_final = open('data\\part_n_' + PN + '\\info_' + PN +'.txt', 'a')
     info_file_final.write('total_time = ' + str(round(total_time/60,1)) + ' minutes')
+    info_file_final.write('\ntotal_time_without_break = ' + str(round(total_time/60,1) - (round(sum(breaks),1))) + ' minutes')
+
     info_file_final.close()
 
 if keyboard:
-    sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key,df.loc[:,'valid_trial']))
+    sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key,\
+                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
     np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 else:
-    sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key,df.loc[:,'valid_trial']))
+    sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key,\
+                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
     np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 
 if practice:
     print('Reached the end of the practice succesfully!!')
 else:
-    print('Reached the end of experiment succesfully!!')
-    
-bye = vis.TextStim(win, text = 'Thanks for participating and goodbye!' if not dutch else 'Bedankt voor uw deelname en tot ziens.',\
-                    color='black', bold = True,\
-                    wrapWidth = 32,\
-                    height = 1,\
-                    pos=(0,0),\
-                    alignVert = 'center')
-
-
-
-bye.draw()
-win.flip()
-time.sleep(15)
+    if crash:
+        print('Reached the end of experiment with a crash..')
+    else:
+        print('Reached the end of experiment succesfully!!')
 
 win.close()
 core.quit()
