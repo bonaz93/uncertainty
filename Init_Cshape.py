@@ -97,7 +97,9 @@ else:
     KeyResp = [0,6]   #buttons of the cedrus box for response
     allowed_keys = None
     esc_keys = [3]
-    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,is_response_right,Button_pressed,response_key, valid_trial, cue_identity, cue_validity'
+    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,\
+    is_response_right,Button_pressed,response_key, valid_trial, cue_identity, cue_validity\
+    color_target, color_cue0, color_cue1, color_cue2, position_target'
 
 
 
