@@ -185,16 +185,16 @@ def Instructions(part_number, part_name, win, item, cue, mode, device, KeyResp, 
     \n- Distractors have a gap on the left or on the right.' if not dutch else\
     'Welkom in dit experiment! In deze visuele zoektaak zal je zo snel\
  en accuraat mogelijk een target moeten detecteren tussen distractoren (afleiders). Deze stimuli zijn vormen in 3 verschillende kleuren (rood, blauw of groen) met een opening aan één kant:\
-    \n\n- Target stimuli hebben ofwel aan de bovenkant ofwel aan onderkant een opening\
+    \n\n- Target stimuli hebben ofwel aan de bovenkant ofwel aan de onderkant een opening\
     \n- Distractoren hebben ofwel aan de linkerkant ofwel aan de rechterkant een opening.'
 
     message_2_target = 'Please look at the fixation point in the center of the screen and start your search from there!\nThe target will be always present and you have to respond to its orientation in this way:\
     \n\n- Press the button on the top with your {} index finger if the gap is on the top of the shape.\
     \n- Press the button on the bottom with your {} index finger if the gap is on the bottom of the shape.' if not dutch else\
-    'Kijk naar het fixatiekruis in het midden van het scherm tot de stimuli op het scherm verschijnen, begin dan onmiddelijk met zoeken!\
+    'Kijk naar het fixatiekruis in het midden van het scherm tot de stimuli op het scherm verschijnen, begin dan onmiddellijk met zoeken!\
  Er zal altijd een target aanwezig zijn en je moet reageren op de oriëntatie van deze target:\
-    \n\n- Duw met je wijsvinger op de bovenste toets als de opening aan de bovenkant is.\
-    \n- Duw met je wijsvinger op de onderste toets als de opening aan de onderkant is.'
+    \n\n- Duw met je {} wijsvinger op de bovenste toets als de opening aan de bovenkant is.\
+    \n- Duw met je {} wijsvinger op de onderste toets als de opening aan de onderkant is.'
 
 
     message_3_cues = 'Before the search, a set of 3 colored cues will appear (colors will change every trial). Please note that:\
@@ -202,10 +202,10 @@ def Instructions(part_number, part_name, win, item, cue, mode, device, KeyResp, 
     \n\n- The other 2 cues will be colored randomly.' if not dutch else\
     'Voor de zoektaak begint zal een set van 3 gekleurde cues verschijnen (kleuren veranderen van trial tot trial). Let op dat:\
     \n\n\n- Enkel ÉÉN van de 3 cues een correct voorspellende cue is, en enkel deze cue heeft hetzelfde kleur als de target. Dit kan je helpen in de visuele zoektaak.\
-    \n\n- De andere 2 cues zullen een willekeurig kleur hebben.'
+    \n\n- De andere 2 cues zullen een willekeurige kleur hebben.'
 
 
-    message_objective = '**You have to guess which of the three cues is the one that is OFTEN colored as the target in order to make a quick detection!**'if not dutch else\
+    message_objective = '**You also have to guess which of the three cues is the one that is OFTEN colored as the target in order to make a quick detection!**'if not dutch else\
     '**Je zal moeten raden welk van de 3 cues de correct voorspellende cue is. Dus, welke cue VAAK hetzelfde kleur heeft als de target om zo de target snel te kunnen detecteren.**'
 
     message_4_switch = 'The cue often colored as the target will not remain the same for the whole experiment (for example, it can switch \
@@ -227,7 +227,7 @@ enkele trials veranderen van de rechter positie naar de bovenste positie). Over 
     'Een paar dingen voordat we beginnen:\n\n\n\
     - Vergeet niet de betrouwbare cue te gebruiken om het visueel zoeken te versnellen (reageer zo snel en zo accuraat mogelijk).\n\n\
     - Probeer op te merken of de cue die je gebruikt betrouwbaar is of niet.\n\n\
-    - Kijk altijd naar het fixatiekreus in het midden voor het zoeken!'
+    - Kijk altijd naar het fixatiekruis in het midden voor het zoeken!'
 
 
     message_final = 'Press a button whenever you are ready to start the real experiment, {}!'.format(part_name) if not dutch else\
@@ -359,7 +359,7 @@ enkele trials veranderen van de rechter positie naar de bovenste positie). Over 
 
 
 
-    lab = ['left','right']
+    lab = ['left','right'] if not dutch else ['linker','rechter']
 
 
     counterbalance = True if part_number % 2 == 0 else False  #True when participant number is even

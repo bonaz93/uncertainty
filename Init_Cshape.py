@@ -20,7 +20,7 @@ file_name, dataframe_name, PN, part_name, mode, hand, age, gender = GUI()
 ##Language
 dutch = True
 
-monitor = 'exp'  #set 'exp' for experiment, 'jac' for my latitude, else 'default'
+monitor = 'jac'  #set 'exp' for experiment, 'jac' for my latitude, else 'default'
 
 # Saving txt after how many trials?
 row_save = 5
@@ -40,11 +40,11 @@ control_same_color = True #Is it possible to have three cues of the same color?
 quiT = True
 
 # Response device: keyboard or Cedrus?
-keyboard = False
+keyboard = True
 
 
 # Set the preferred color space, adjust the labels accordingly. To use gammacorrection and isoluminant stimuli, RGB is needed. To test on different monitors use HSV.
-color_space = 'rgb'
+color_space = 'hsv'
 
 if color_space == 'hsv':
     color_labels = [(240, 1, 1), (0, 1, 1), (90, 1, 1)]
@@ -97,7 +97,9 @@ else:
     KeyResp = [0,6]   #buttons of the cedrus box for response
     allowed_keys = None
     esc_keys = [3]
-    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,is_response_right,Button_pressed,response_key, valid_trial, cue_identity, cue_validity'
+    headers_answer = 'Reaction_times_Cedrus,Total_trial_time,Items_time,Placeholder_time,Cue_time,\
+    is_response_right,Button_pressed,response_key, valid_trial, cue_identity, cue_validity\
+    color_target, color_cue0, color_cue1, color_cue2, position_target'
 
 
 
@@ -181,22 +183,23 @@ color of the target!\n\nIn the real experiment you will have no hints and you wi
 neg_feedback_text = 'Wrong answer! Up for gap in the top, down for gap in the bottom!' if not dutch else 'Verkeerd antwoord!\
  Gebruik de bovenste toets als de opening aan de bovenkant is, en de onderste toets als de opening aan de onderkant is.'
  
-hint_text = 'The reliable cue is in the {} position' if not dutch else 'De betrouwbare ceu staat in de {} positie'
+hint_text = 'The reliable cue is in the {} position' if not dutch else 'De betrouwbare cue staat in de {} positie'
 
 bye_text = 'Thanks for participating and goodbye!' if not dutch else 'Bedankt voor uw deelname en tot ziens.'
 
  #TO BE TRANSLATED BETTER?
 string1 = 'Always try to understand which of the three cues is the reliable one (more often colored as the target) and use it to find the target faster!\n\n\
  And remember that:\
-\n\n\n - The reliable cue will not *always* be of the same color of the target, but most of the times it will!\
+\n\n\n - The reliable cue will not *always* be of the same color of the target, but *most of the times* it will!\
 \n\n\n - The reliable cue can change position after a certain amount of trials' if not dutch else\
 'Probeer te begrijpen welke van de drie signalen de betrouwbare is (vaker gekleurd als het doelwit) en gebruik het om\
  het doel sneller te vinden!\
  En onthoud dat:\
-\n\n\n - De betrouwbare keu zal niet *altijd* van dezelfde kleur zijn als het doelwit, maar meestal wel van dezelfde kleur!\
-\n\n\n - De betrouwbare keu zal van positie veranderen na een variabel aantal proeven.'
+\n\n\n - De betrouwbare cue zal niet *altijd* van dezelfde kleur zijn als het doelwit, maar *meestal* wel!\
+\n\n\n - De betrouwbare cue zal van positie veranderen na een variabel aantal trials.'
 
+ #TO BE TRANSLATED BETTER?
 invalid_hint = 'This trial was invalid! The reliable cue was not of the same color of the target, but this doesn\'t necessarly means\
- that it is in a new position!' if not dutch else\
-'Deze rechtszaak was ongeldig! De betrouwbare keu was niet van dezelfde kleur als het doelwit, \
-maar dit betekent niet noodzakelijkerwijs dat het in een nieuwe positie verkeert!'
+ that it switched position!' if not dutch else\
+'Deze trial was ongeldig! De betrouwbare cue was niet van dezelfde kleur als het doelwit, \
+maar dit betekent niet noodzakelijkerwijs dat het van plaats veranderd is!'

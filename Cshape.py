@@ -640,11 +640,13 @@ for rowI in range(row_crash,trials_total):
 
         if keyboard:
             sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key,\
-                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
+                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def'],\
+                                     df.loc[:,'color_target'],df.loc[:,'color_cue0'],df.loc[:,'color_cue1'],df.loc[:,'color_cue2'], df.loc[:,'position_target']))
             np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
         else:
             sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key,\
-                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
+                                     df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def'],\
+                                     df.loc[:,'color_target'],df.loc[:,'color_cue0'],df.loc[:,'color_cue1'],df.loc[:,'color_cue2'], df.loc[:,'position_target']))
             np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 
 
@@ -671,11 +673,13 @@ if not practice:
 
 if keyboard:
     sheet = np.column_stack((RTs_keyboard, trial_time, items_time, placeholder_time, cue_time, is_response_right, response_key,\
-                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
+                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def'],\
+                                     df.loc[:,'color_target'],df.loc[:,'color_cue0'],df.loc[:,'color_cue1'],df.loc[:,'color_cue2'], df.loc[:,'position_target']))
     np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 else:
     sheet = np.column_stack((RTs_cedrus, trial_time, items_time, placeholder_time, cue_time, is_response_right, button_pressed, response_key,\
-                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def']))
+                             df.loc[:,'valid_trial'],df.loc[:,'cue_identity_def'],df.loc[:,'cue_validity_def'],\
+                                     df.loc[:,'color_target'],df.loc[:,'color_cue0'],df.loc[:,'color_cue1'],df.loc[:,'color_cue2'], df.loc[:,'position_target']))
     np.savetxt(file_name, sheet, delimiter = ',', header = headers_answer, fmt='%s')
 
 if practice:
