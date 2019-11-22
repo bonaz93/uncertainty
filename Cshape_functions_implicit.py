@@ -208,10 +208,10 @@ def Instructions(part_number, part_name, win, item, mode, device, KeyResp, ori_t
     \n\n- Press the button on the top with your {} index finger if the gap is on the top of the shape.\
     \n- Press the button on the bottom with your {} index finger if the gap is on the bottom of the shape.\
     \n- Always look at the fixation cross in the center before the search!' if not dutch else\
-    'Een paar dingen voordat we beginnen:\n\n\n\
+    'Een paar dingen voordat we beginnen:\n\
     \n\n- Duw met je {} wijsvinger op de bovenste toets als de opening aan de bovenkant is.\
-    \n- Duw met je {} wijsvinger op de onderste toets als de opening aan de onderkant is.\
-    \n- Kijk altijd naar het fixatiekruis in het midden voor het zoeken!'
+    \n\n- Duw met je {} wijsvinger op de onderste toets als de opening aan de onderkant is.\
+    \n\n- Kijk altijd naar het fixatiekruis in het midden voor het zoeken!'
 
 
     message_final = 'Press a button whenever you are ready to start the real experiment, {}!'.format(part_name) if not dutch else\

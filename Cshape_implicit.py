@@ -15,8 +15,8 @@ Experimental procedure script for the visual search task - explicit mode. Data i
 #smooth transaction b/w practice and real experiment??
 #implicit or explicit mode should be in one script only with the possibility to choose from GUI
 #Feedback on mistakes and on misses?
-#
-#
+#we could use colorspace rgb255 to avoid messing with the ones
+#GUI in it's own script?
 #
 #
 #############################
@@ -596,7 +596,7 @@ for rowI in range(row_crash,trials_total):
 
 
     if rowI == trials_total-1:
-        if not practice: #End of practice
+        if practice: #End of practice
             end_practice_message.draw()
             win.flip()
             time.sleep(3)
@@ -681,7 +681,7 @@ for rowI in range(row_crash,trials_total):
                                  warning = wrong_answer, win = win, device = device, quiT = quiT,\
                                  rowI = rowI, keyss = keys_4_answ_reduced)
             A1_0 = None
-            if (keyboard and A1 == '1') or (A1 == 0 and not keyboard) : #Response on keyboard or cedrus is yes
+            if (keyboard and A1 == '1') or (A1 == 6 and not keyboard) : #Response on keyboard or cedrus is yes
                 Q1_0.draw() #'Which color do you think the target was most often colored with?
                 win.flip()
                 A1_0 = Response(device = device, keyboard = keyboard, quiT = quiT,\
@@ -705,7 +705,7 @@ for rowI in range(row_crash,trials_total):
                                  rowI = rowI, keyss = keys_4_answ_reduced)
 
             A2_0 = None
-            if (keyboard and A2 == '1') or (A2 == 0 and not keyboard):
+            if (keyboard and A2 == '1') or (A2 == 6 and not keyboard):
                 Q2_0.draw()
                 win.flip()
                 A2_0 = Response(device = device, keyboard = keyboard, quiT = quiT,\

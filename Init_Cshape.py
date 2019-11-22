@@ -24,17 +24,17 @@ else:
 file_name, dataframe_name, PN, part_name, mode, hand, age, gender = GUI()
 
 ##Language
-dutch = False
+dutch = True
 
-monitor = 'jac'  #set 'exp' for experiment, 'jac' for my latitude, else 'default'
+monitor = 'exp'  #set 'exp' for experiment, 'jac' for my latitude, else 'default'
 
 # Saving txt after how many trials?
 row_save = 15
 
 # After how many minutes should we do a break?
-break_time = 2
+break_time = 7
 
-participants = range(5) #list of dataframes we want to create dataframe for each participant
+participants = [36,40,44,48] #list of dataframes we want to create dataframe for each participant
 
 
 ## Randomization controls?
@@ -43,11 +43,11 @@ control_target_cue_match = False
 control_same_color = False #If False, it is possible to have three cues of the same color.
 
 ## Possible to quit experiment?
-quiT = True
+quiT = False
 
 
 # Response device: keyboard or Cedrus?
-keyboard = True
+keyboard = False
 
 
 # Set the preferred color space, adjust the labels accordingly. To use gammacorrection and isoluminant stimuli, RGB is needed. To test on different monitors use HSV.
@@ -90,8 +90,8 @@ if not implicit:
     series = 1 if practice else 9# Number of series in total - one serie is a set of trials in which cue_identity and cue_validity do NOT change
 
 else: #implicit mode!
-    trials_total = 10 if practice else 140 #Number of rows in the dataframe and of repetitions in the experimental script
-    series = 1 if practice else 2# Number of series in total - one serie is a set of trials in which cue_identity and cue_validity do NOT change
+    trials_total = 12 if practice else 630 #Number of rows in the dataframe and of repetitions in the experimental script
+    series = 1 if practice else 9# Number of series in total - one serie is a set of trials in which cue_identity and cue_validity do NOT change
 
 
 number_positions = 12  # Search array items
@@ -266,5 +266,5 @@ if implicit:
     wrong_answer_text = 'Wrong button, please only respond with the indicated buttons' if not dutch else\
     'Verkeerde knop, reageer alleen met de aangegeven knoppen.'
 
-    keys_4_answ = ['1','2','3'] if keyboard else [0,3,6]
+    keys_4_answ = ['1','2','3'] if keyboard else [0,3,6]   # Top button for CEDRUS is 6-----> 6 == YES
     keys_4_answ_reduced = ['1','3'] if keyboard else [0,6]
